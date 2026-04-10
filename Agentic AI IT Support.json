@@ -1,0 +1,120 @@
+{
+  "name": "Agentic AI IT Support",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "it-support",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8457ceef-d97f-470f-80fa-28c0bf067d12",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        304
+      ],
+      "webhookId": "e364cd4d-3367-4bbc-b8ad-76a5f0d2494b"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent IT support agent.\n\nUser issue: {{ $json.body.issue }}\n\nReply ONLY in this JSON format:\n{\n  \"category\": \"password_reset or network_issue or hardware_problem or software_error\",\n  \"priority\": \"low or medium or high or critical\",\n  \"solution\": \"step by step troubleshooting\",\n  \"escalate\": true or false\n}",
+        "batching": {}
+      },
+      "id": "45303bbc-2a4f-44b7-9e6d-83df4c1f94a4",
+      "name": "IT Support Assistant",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        464,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=={{ JSON.stringify($('IT Support Assistant').item.json) }}",
+        "options": {}
+      },
+      "id": "32d2558f-0011-4e96-9803-837fb1715f50",
+      "name": "Send Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        816,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        400,
+        512
+      ],
+      "id": "9c84cfd8-2039-426e-9436-30c38c212fe6",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "HwBV35hOiTkEb4AB",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "IT Support Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IT Support Assistant": {
+      "main": [
+        [
+          {
+            "node": "Send Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IT Support Assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "59fc63db-8332-41a7-8905-1e146fbcec39",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3c94875c4e45f66b8cb04c7d0b939e419f538feecfba4cea10b316ab56d54b28"
+  },
+  "id": "kPfAHZegL8FVF32Y",
+  "tags": []
+}
